@@ -15,127 +15,25 @@
 
         body { font-family: 'Helvetica Neue', Arial, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
         h1 { color: var(--primary); margin-bottom: 20px; }
-        .container { width: 100%; max-width: 600px; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; box-sizing: border-box; }
+        .container { width: 100%; max-width: 600px; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
         
+        /* 隠すクラス */
         .admin-only { display: none; }
 
-        /* 🕹️ クレーンゲーム筐体のグラフィック */
-        .game-machine {
-            width: 100%;
-            height: 250px;
-            background: linear-gradient(180deg, #ffeaa7, #fdcb6e);
-            border: 6px solid #6c5ce7;
-            border-radius: 10px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.2);
-            margin-bottom: 15px;
-        }
+        .fish-container { display: flex; justify-content: space-between; width: 100%; max-width: 500px; height: 60px; margin-bottom: 20px; }
+        .fish { font-size: 2rem; animation: jump 2s ease-in-out infinite; }
+        .fish-right { animation-delay: 1s; }
+        @keyframes jump { 0%, 100% { transform: translateY(20px); } 50% { transform: translateY(-10px); } }
 
-        /* アーム */
-        .crane-arm {
-            width: 4px;
-            height: 50px;
-            background: #b2bec3;
-            position: absolute;
-            top: 0;
-            left: 80%;
-            transition: left 2s ease, height 1s ease 2s;
-            z-index: 10;
-        }
-        .crane-claw {
-            width: 30px;
-            height: 20px;
-            border: 3px solid #636e72;
-            border-bottom: none;
-            border-radius: 15px 15px 0 0;
-            position: absolute;
-            bottom: -20px;
-            left: -13px;
-            font-size: 1.2rem;
-            text-align: center;
-            line-height: 15px;
-        }
-
-        /* 🐟 景品（トビウオ） */
-        .prize-fish {
-            font-size: 2.2rem;
-            position: absolute;
-            bottom: 20px;
-            left: 77%;
-            cursor: pointer;
-            transition: bottom 1s ease 3s, left 2s ease 4s;
-            display: inline-block;
-        }
-
-        /* 🕳️ 立体的な景品出口（穴） */
-        .drop-chute-back {
-            width: 70px;
-            height: 60px;
-            background: #2d3436;
-            border-radius: 5px 5px 0 0;
-            position: absolute;
-            bottom: 0;
-            left: 10px;
-            box-shadow: inset 0 10px 10px rgba(0,0,0,0.8);
-        }
-        .drop-chute-front {
-            width: 80px;
-            height: 20px;
-            background: rgba(255,255,255,0.4);
-            border: 2px solid #6c5ce7;
-            border-bottom: none;
-            position: absolute;
-            bottom: 0;
-            left: 5px;
-            z-index: 15;
-            border-radius: 5px 5px 0 0;
-        }
-
-        /* 👧 女の子のゲット演出アニメーション */
-        .success-overlay {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.5s;
-        }
-        .success-overlay.show { opacity: 1; pointer-events: auto; }
-        
-        .girl-character {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            animation: bounce 0.5s infinite alternate;
-        }
-        /* CSSで描く女の子の顔と体 */
-        .girl-head { width: 50px; height: 50px; background: #ffe0bd; border-radius: 50%; position: relative; border: 2px solid #2d3436; }
-        .girl-hair { width: 56px; height: 30px; background: #ff7675; border-radius: 30px 30px 0 0; position: absolute; top: -4px; left: -5px; }
-        .girl-eyes { width: 6px; height: 6px; background: #2d3436; border-radius: 50%; position: absolute; top: 22px; left: 12px; box-shadow: 20px 0 #2d3436; }
-        .girl-mouth { width: 12px; height: 8px; background: #d63031; border-radius: 0 0 10px 10px; position: absolute; top: 32px; left: 19px; }
-        .girl-body { width: 40px; height: 45px; background: #74b9ff; border-radius: 10px 10px 0 0; border: 2px solid #2d3436; border-bottom: none; margin-top: -2px; position: relative; }
-        .girl-hand-l { width: 10px; height: 25px; background: #ffe0bd; border: 2px solid #2d3436; position: absolute; left: -10px; top: 5px; border-radius: 5px; transform: rotate(45deg); transform-origin: top right; animation: wave 0.2s infinite alternate; }
-        .girl-hand-r { width: 10px; height: 25px; background: #ffe0bd; border: 2px solid #2d3436; position: absolute; right: -10px; top: 5px; border-radius: 5px; transform: rotate(-45deg); transform-origin: top left; animation: wave2 0.2s infinite alternate; }
-        
-        .get-text { color: #fff; font-size: 1.5rem; font-weight: bold; margin-top: 15px; text-shadow: 0 2px 5px rgba(0,0,0,0.5); text-align: center; }
-
-        @keyframes bounce { to { transform: translateY(-20px); } }
-        @keyframes wave { to { transform: rotate(80deg); } }
-        @keyframes wave2 { to { transform: rotate(-80deg); } }
-
-        /* カウンター・ボタン */
         .counter-box { text-align: center; font-size: 1.2rem; margin-bottom: 15px; font-weight: bold; }
         .counter-box span { color: var(--primary); font-size: 2rem; }
-        button { background-color: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 25px; cursor: pointer; width: 100%; margin-bottom: 10px; font-weight: bold; font-size: 1rem; }
+        
+        button { background-color: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 25px; cursor: pointer; width: 100%; margin-bottom: 10px; font-weight: bold; }
         button.secondary { background-color: var(--secondary); }
 
         .list-item { border-bottom: 1px solid #eee; padding: 15px 0; position: relative; }
         .delete-btn { background-color: #ff7675; color: white; border: none; padding: 3px 8px; font-size: 0.75rem; border-radius: 5px; cursor: pointer; display: inline-block; margin-top: 5px; }
+
         .confetti { position: fixed; z-index: 9999; top: -20px; pointer-events: none; animation: fall linear forwards; }
         @keyframes fall { to { transform: translateY(105vh) rotate(720deg); } }
     </style>
@@ -144,27 +42,9 @@
 
     <h1>あきぽそそのWebサイト</h1>
 
-    <div class="container">
-        <div class="game-machine">
-            <div class="drop-chute-back"></div>
-            
-            <div class="crane-arm" id="crane-arm">
-                <div class="crane-claw">🏗️</div>
-            </div>
-            
-            <span class="prize-fish" id="prize-fish">🐟</span>
-            
-            <div class="drop-chute-front"></div>
-
-            <div class="success-overlay" id="success-overlay">
-                <div class="girl-character">
-                    <div class="girl-head"><div class="girl-hair"></div><div class="girl-eyes"></div><div class="girl-mouth"></div></div>
-                    <div class="girl-body"><div class="girl-hand-l"></div><div class="girl-hand-r"></div></div>
-                    <div class="get-text">やったー！<br>トビウオをゲットしたよ！🐟✨</div>
-                </div>
-            </div>
-        </div>
-        <button id="start-game-btn">🕹️ クレーンゲームを動かす！</button>
+    <div class="fish-container">
+        <span class="fish">🐟</span>
+        <span class="fish fish-right">🐟</span>
     </div>
 
     <div class="container">
@@ -174,8 +54,9 @@
 
     <div class="container">
         <h2>📖 あきぽその日記</h2>
+        <!-- 管理者のみ表示 -->
         <div id="diary-form" class="admin-only">
-            <textarea id="diary-input" style="width:100%; height:80px; margin-bottom:10px; box-sizing:border-box; border:2px solid #ddd; border-radius:8px;"></textarea>
+            <textarea id="diary-input" style="width:100%; height:80px; margin-bottom:10px;"></textarea>
             <button id="diary-btn">日記を投稿する</button>
         </div>
         <div id="diary-list"></div>
@@ -183,74 +64,21 @@
 
     <div class="container">
         <h2>💬 足あと・コメント</h2>
-        <input type="text" id="comment-name" placeholder="お名前" style="width:100%; padding:10px; margin-bottom:10px; box-sizing:border-box; border:2px solid #ddd; border-radius:8px;">
-        <textarea id="comment-input" style="width:100%; height:80px; margin-bottom:10px; box-sizing:border-box; border:2px solid #ddd; border-radius:8px;"></textarea>
+        <input type="text" id="comment-name" placeholder="お名前" style="width:100%; padding:10px; margin-bottom:10px; box-sizing:border-box;">
+        <textarea id="comment-input" style="width:100%; height:80px; margin-bottom:10px; box-sizing:border-box;"></textarea>
         <button id="comment-btn" class="secondary">コメントを残す</button>
         <div id="comment-list"></div>
     </div>
 
+    <!-- 管理用ログインボタン -->
     <div style="margin-top: 20px;">
-        <button id="login-btn" style="background:none; color:#aaa; font-size:0.8rem; width:auto; border:none;">管理者ログイン</button>
+        <button id="login-btn" style="background:none; color:#aaa; font-size:0.8rem;">管理者ログイン</button>
     </div>
 
     <script>
-        const ADMIN_PASSWORD = "1234";
+        const ADMIN_PASSWORD = "1234"; // パスワード
 
-        // 🕹️ クレーンゲームのアニメーション制御
-        document.getElementById('start-game-btn').onclick = function() {
-            const arm = document.getElementById('crane-arm');
-            const fish = document.getElementById('prize-fish');
-            const overlay = document.getElementById('success-overlay');
-            const btn = this;
-
-            btn.disabled = true;
-            btn.innerText = "ねらっています...";
-
-            // 1. アームが魚の真上に移動 (2秒)
-            arm.style.left = "77%";
-
-            // 2. アームが下におりて魚をキャッチ (1秒後から開始)
-            setTimeout(() => {
-                arm.style.height = "190px";
-            }, 2000);
-
-            // 3. アームが魚を掴んで持ち上がる
-            setTimeout(() => {
-                fish.style.bottom = "140px"; // 魚が持ち上がる
-                arm.style.height = "50px";   // アームが戻る
-            }, 3500);
-
-            // 4. 左側の出口へ移動
-            setTimeout(() => {
-                arm.style.left = "35px";
-                fish.style.left = "25px";
-            }, 5000);
-
-            // 5. 出口の上でパッと離して、立体的な穴の奥へ落ちる！
-            setTimeout(() => {
-                fish.style.bottom = "-50px"; // 穴の底へ落下
-            }, 7000);
-
-            // 6. 女の子が登場して大喜び！紙ふぶきも自動で発射！
-            setTimeout(() => {
-                overlay.classList.add('show');
-                createConfetti(); // 祝福の紙ふぶき
-            }, 8200);
-
-            // 7. 3秒後に画面をリセットしてまた遊べるようにする
-            setTimeout(() => {
-                overlay.classList.remove('show');
-                // 位置を初期状態に戻す
-                arm.style.left = "80%";
-                arm.style.height = "50px";
-                fish.style.left = "77%";
-                fish.style.bottom = "20px";
-                btn.disabled = false;
-                btn.innerText = "🕹️ クレーンゲームを動かす！";
-            }, 12000);
-        };
-
-        // ログインUI切り替え
+        // ログイン状態を確認してUIを切り替え
         function checkAdmin() {
             if (sessionStorage.getItem('isAdmin') === 'true') {
                 document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block');
@@ -258,67 +86,78 @@
             }
         }
 
+        // 管理者ログイン
         document.getElementById('login-btn').addEventListener('click', () => {
             const pass = prompt("管理者パスワードを入力してください：");
             if (pass === ADMIN_PASSWORD) {
                 sessionStorage.setItem('isAdmin', 'true');
                 checkAdmin();
-            } else { alert("パスワードが違います"); }
+            } else {
+                alert("パスワードが違います");
+            }
         });
 
-        // カウンター
+        // 訪問者カウンター（前回の続き）
         let count = parseInt(localStorage.getItem('visitor_count') || 1);
         if (sessionStorage.getItem('counted') !== 'true') {
-            count++; localStorage.setItem('visitor_count', count); sessionStorage.setItem('counted', 'true');
+            count++;
+            localStorage.setItem('visitor_count', count);
+            sessionStorage.setItem('counted', 'true');
         }
         document.getElementById('visitor-count').textContent = count;
 
-        // 3種の紙ふぶき
+        // 紙ふぶき処理
         const shapes = ['square', 'heart', 'star'];
         const colors = ['#ff7675', '#74b9ff', '#ffeaa7', '#55efc4', '#a29bfe', '#fd79a8'];
-        function createConfetti() {
+        document.getElementById('confetti-btn').addEventListener('click', () => {
             for (let i = 0; i < 80; i++) {
                 const el = document.createElement('div');
                 el.className = 'confetti';
                 const shape = shapes[Math.floor(Math.random() * shapes.length)];
                 if (shape === 'square') { el.style.backgroundColor = colors[Math.floor(Math.random()*colors.length)]; el.style.width = '10px'; el.style.height = '10px'; }
-                else { el.innerHTML = (shape === 'heart' ? '❤️' : '★'); el.style.fontSize = '15px'; el.style.color = colors[Math.floor(Math.random()*colors.length)]; }
+                else { el.innerHTML = (shape === 'heart' ? '❤️' : '★'); el.style.fontSize = '15px'; }
                 el.style.left = Math.random() * 100 + 'vw';
-                el.style.animationDuration = Math.random() * 2 + 1.5 + 's';
+                el.style.animationDuration = Math.random() * 2 + 2 + 's';
                 document.body.appendChild(el);
                 el.addEventListener('animationend', () => el.remove());
             }
-        }
-        document.getElementById('confetti-btn').addEventListener('click', createConfetti);
+        });
 
-        // 掲示板データ処理
+        // データ管理
         let diaries = JSON.parse(localStorage.getItem('diaries')) || [];
         let comments = JSON.parse(localStorage.getItem('comments')) || [];
 
         function render() {
-            const dList = document.getElementById('diary-list'); dList.innerHTML = '';
+            const dList = document.getElementById('diary-list');
+            dList.innerHTML = '';
             diaries.forEach((item, index) => {
-                dList.innerHTML += `<div class="list-item"><div style="font-size:0.8rem;color:#999;">${item.date}</div><div>${item.text}</div><button class="delete-btn admin-only" onclick="delD(${index})">削除</button></div>`;
+                dList.innerHTML += `<div class="list-item"><div>${item.date}</div><div>${item.text}</div><button class="delete-btn admin-only" onclick="delD(${index})">削除</button></div>`;
             });
-            const cList = document.getElementById('comment-list'); cList.innerHTML = '';
+            const cList = document.getElementById('comment-list');
+            cList.innerHTML = '';
             comments.forEach((item, index) => {
-                cList.innerHTML += `<div class="list-item"><div style="font-size:0.8rem;color:#999;">${item.date} - <strong>${item.name}</strong></div><div>${item.isDeleted ? '<em style="color:#999;">このコメントは削除されました</em>' : item.text}</div>${!item.isDeleted ? `<button class="delete-btn admin-only" onclick="delC(${index})">削除</button>` : ''}</div>`;
+                cList.innerHTML += `<div class="list-item"><div>${item.date} - ${item.name}</div><div>${item.isDeleted ? '<em>このコメントは削除されました</em>' : item.text}</div>${!item.isDeleted ? `<button class="delete-btn admin-only" onclick="delC(${index})">削除</button>` : ''}</div>`;
             });
-            checkAdmin();
+            checkAdmin(); // 再表示時に管理権限チェック
         }
 
         document.getElementById('diary-btn').onclick = () => {
-            const text = document.getElementById('diary-input').value; if(!text) return;
-            diaries.unshift({ date: new Date().toLocaleString(), text });
-            localStorage.setItem('diaries', JSON.stringify(diaries)); render();
+            const text = document.getElementById('diary-input').value;
+            if(!text) return;
+            const now = new Date();
+            diaries.unshift({ date: now.toLocaleString(), text });
+            localStorage.setItem('diaries', JSON.stringify(diaries));
+            render();
             document.getElementById('diary-input').value = '';
         };
 
         document.getElementById('comment-btn').onclick = () => {
             const name = document.getElementById('comment-name').value || '名無しさん';
-            const text = document.getElementById('comment-input').value; if(!text) return;
+            const text = document.getElementById('comment-input').value;
+            if(!text) return;
             comments.unshift({ date: new Date().toLocaleString(), name, text, isDeleted: false });
-            localStorage.setItem('comments', JSON.stringify(comments)); render();
+            localStorage.setItem('comments', JSON.stringify(comments));
+            render();
             document.getElementById('comment-input').value = '';
         };
 
