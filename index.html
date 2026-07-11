@@ -630,18 +630,19 @@
     </div>
 
     <script>
-        // 画面がすべて読み込まれてから安全にプログラムを動かす設定
+        // 何が起きても絶対に途中で処理をクラッシュさせない安全ガード付き実行
         window.addEventListener('DOMContentLoaded', () => {
             
-            // --- 各種要素の安全な取得設定 ---
-            const crane = document.getElementById('crane');
-            const claw = document.getElementById('claw');
-            const liveClock = document.getElementById('liveClock');
-            const calendarBox = document.getElementById('calendarBox');
-            const calHeader = document.getElementById('calHeader');
-            const calGrid = document.getElementById('calGrid');
-            const visitorCount = document.getElementById('visitorCount');
-            const commentModal = document.getElementById('commentModal');
-            const diaryModal = document.getElementById('diaryModal');
-            const diaryList = document.getElementById('diaryList');
-            const c
+            // 1. 時計機能の初期化
+            try {
+                const liveClock = document.getElementById('liveClock');
+                function updateClock() {
+                    if (!liveClock) return;
+                    const now = new Date();
+                    const y = now.getFullYear();
+                    const m = String(now.getMonth() + 1).padStart(2, '0');
+                    const d = String(now.getDate()).padStart(2, '0');
+                    const h = String(now.getHours()).padStart(2, '0');
+                    const min = String(now.getMinutes()).padStart(2, '0');
+                    const s = String(now.getSeconds()).padStart(2, '0');
+                    liveClock.innerText = `${y}/${m}/${d} ${h}:${mi
