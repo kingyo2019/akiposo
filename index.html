@@ -493,9 +493,9 @@
             box-shadow: 0 0px 0 #444;
         }
 
-        /* 修正：紙ふぶき用スタイルを確実に設定 */
+        /* 紙ふぶき用スタイル */
         .confetti-piece {
-            position: fixed; /* absoluteからfixedにして画面全体に降るように修正 */
+            position: fixed;
             width: 10px;
             height: 10px;
             pointer-events: none;
@@ -564,7 +564,7 @@
 
             <div class="info-card">
                 <div class="counter-box">
-                    あなたは<span class="counter-number" id="visitorCount">1,235</span>人目の訪問者です
+                    あなたは<span class="counter-number" id="visitorCount">0</span>人目の訪問者です
                 </div>
                 <div class="link-container">
                     <div class="custom-link" onclick="openModal('commentModal')">💬 訪問者のコメント欄</div>
@@ -579,7 +579,7 @@
         <div class="modal-content" onclick="event.stopPropagation()">
             <span class="modal-close" onclick="closeModal('commentModal')">&times;</span>
             <div class="modal-title">訪問者のコメント欄</div>
-            <div class="warning-text">⚠️ 誹傷中傷や荒らしはやめてください</div>
+            <div class="warning-text">⚠️ 誹謗中傷や荒らしはやめてください</div>
             
             <div class="input-group">
                 <input type="text" id="commentName" placeholder="ニックネーム">
@@ -664,7 +664,7 @@
                         fallingItem.style.left = origPos.left + 'px';
                         document.getElementById('prizeFloor').appendChild(fallingItem);
                         setTimeout(() => { fallingItem.style.transition = ''; }, 100);
-                        celebrate(); // 景品ゲット時の自動紙ふぶき
+                        celebrate();
                     }, 1500);
                     grabbedItem = null;
                 }
@@ -704,38 +704,27 @@
             }
         }
 
-        // --- アクセスカウンター ---
-        let currentCount = localStorage.getItem('site_counter') || 2525;
+        // --- 【修正】アクセスカウンター（0からスタートする設定） ---
+        let currentCount = localStorage.getItem('site_counter') || 0;
         currentCount = parseInt(currentCount) + 1; localStorage.setItem('site_counter', currentCount);
         document.getElementById('visitorCount').innerText = currentCount.toLocaleString();
 
-        // --- 【修正版】紙ふぶきのロジック（確実に画面全体に降らせる） ---
+        // --- 紙ふぶきのロジック ---
         function celebrate() {
             const colors = ['#ff8a80', '#ffb74d', '#a5d6a7', '#80deea', '#b3e5fc', '#d1c4e9', '#ff80ab'];
             for (let i = 0; i < 35; i++) {
                 const piece = document.createElement('div');
                 piece.classList.add('confetti-piece');
-                
-                // ランダムな設定
                 piece.style.left = Math.random() * 100 + 'vw';
                 piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                
-                // 大きさとアニメーション速度・ズレ
                 const scale = Math.random() * 0.7 + 0.6;
                 piece.style.transform = `scale(${scale})`;
-                
                 const delay = Math.random() * 0.3;
                 piece.style.animationDelay = delay + 's';
-                
                 const duration = Math.random() * 1.2 + 1.8;
                 piece.style.animationDuration = duration + 's';
-                
                 document.body.appendChild(piece);
-
-                // アニメーション完了後に確実に消去
-                setTimeout(() => {
-                    piece.remove();
-                }, (delay + duration + 0.5) * 1000);
+                setTimeout(() => { piece.remove(); }, (delay + duration + 0.5) * 1000);
             }
         }
 
@@ -760,7 +749,6 @@
             };
             comments.unshift(newComment);
             localStorage.setItem('web_comments', JSON.stringify(comments));
-            
             textInput.value = '';
             loadComments();
         }
@@ -796,7 +784,6 @@
             };
             diaries.unshift(newDiary);
             localStorage.setItem('web_diaries', JSON.stringify(diaries));
-            
             titleInput.value = ''; textInput.value = '';
             loadDiaries();
         }
