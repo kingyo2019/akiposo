@@ -332,6 +332,7 @@
             grid-template-columns: repeat(7, 1fr);
             text-align: center;
             gap: 2px;
+            margin-top: 5px;
         }
         .day-name { font-weight: bold; background: #eee; padding: 2px 0; }
         .calendar-day { padding: 4px 0; border-radius: 3px; }
@@ -552,20 +553,20 @@
                 </div>
             </div>
             <div class="control-panel">
-                <button class="control-btn" id="btnLeft">◁</button>
-                <button class="control-btn btn-grab" id="btnGrab">つかむ</button>
-                <button class="control-btn" id="btnRight">▷</button>
+                <button class="control-btn" id="btnLeft" onclick="moveLeft()">◁</button>
+                <button class="control-btn btn-grab" id="btnGrab" onclick="grabAction()">つかむ</button>
+                <button class="control-btn" id="btnRight" onclick="moveRight()">▷</button>
             </div>
         </div>
 
         <div class="side-panel">
             <div class="info-card">
-                <button class="cal-btn" id="btnCalendar">📅 カレンダー表示</button>
+                <button class="cal-btn" id="btnCalendar" onclick="toggleCalendar()">📅 カレンダー表示</button>
                 <div class="calendar-container" id="calendarBox">
                     <div class="calendar-header-wrapper">
-                        <button class="cal-arrow-btn" id="btnPrevMonth">◀</button>
+                        <button class="cal-arrow-btn" id="btnPrevMonth" onclick="prevMonth()">◀</button>
                         <div class="calendar-header" id="calHeader">2026年 7月</div>
-                        <button class="cal-arrow-btn" id="btnNextMonth">▶</button>
+                        <button class="cal-arrow-btn" id="btnNextMonth" onclick="nextMonth()">▶</button>
                     </div>
                     <div class="calendar-grid" id="calGrid"></div>
                 </div>
@@ -580,17 +581,17 @@
                     あなたは<span class="counter-number" id="visitorCount">0</span>人目の訪問者です
                 </div>
                 <div class="link-container">
-                    <div class="custom-link" id="linkComment">💬 訪問者のコメント欄</div>
-                    <div class="custom-link" id="linkDiary">📖 あきぽその日記</div>
+                    <div class="custom-link" id="linkComment" onclick="openModal('commentModal')">💬 訪問者のコメント欄</div>
+                    <div class="custom-link" id="linkDiary" onclick="openModal('diaryModal')">📖 あきぽその日記</div>
                 </div>
             </div>
         </div>
 
     </div>
 
-    <div class="modal-overlay" id="commentModal">
-        <div class="modal-content" id="commentContent">
-            <span class="modal-close" id="closeComment">&times;</span>
+    <div class="modal-overlay" id="commentModal" onclick="closeModal('commentModal')">
+        <div class="modal-content" id="commentContent" onclick="event.stopPropagation()">
+            <span class="modal-close" id="closeComment" onclick="closeModal('commentModal')">&times;</span>
             <div class="modal-title">訪問者のコメント欄</div>
             <div class="warning-text">⚠️ 誹謗中傷や荒らしはやめてください</div>
             
@@ -600,15 +601,15 @@
             <div class="input-group">
                 <textarea id="commentText" rows="3" placeholder="コメントを入力（アメブロ風）..."></textarea>
             </div>
-            <button class="submit-btn" id="btnSubmitComment">コメントを投稿する</button>
+            <button class="submit-btn" id="btnSubmitComment" onclick="addComment()">コメントを投稿する</button>
 
             <div class="list-box" id="commentList"></div>
         </div>
     </div>
 
-    <div class="modal-overlay" id="diaryModal">
-        <div class="modal-content" id="diaryContent">
-            <span class="modal-close" id="closeDiary">&times;</span>
+    <div class="modal-overlay" id="diaryModal" onclick="closeModal('diaryModal')">
+        <div class="modal-content" id="diaryContent" onclick="event.stopPropagation()">
+            <span class="modal-close" id="closeDiary" onclick="closeModal('diaryModal')">&times;</span>
             <div class="modal-title">あきぽその日記</div>
             
             <div class="input-group">
@@ -617,32 +618,24 @@
             <div class="input-group">
                 <textarea id="diaryText" rows="4" placeholder="今日の日記を書きましょう..."></textarea>
             </div>
-            <button class="submit-btn" style="background-color: #0288d1;" id="btnSubmitDiary">日記を公開する</button>
+            <button class="submit-btn" style="background-color: #0288d1;" id="btnSubmitDiary" onclick="addDiary()">日記を公開する</button>
 
             <div class="list-box" id="diaryList"></div>
         </div>
     </div>
 
     <div class="button-area">
-        <button class="confetti-btn btn-cf">紙ふぶき</button>
-        <button class="confetti-btn btn-cf">紙ふぶき</button>
-        <button class="confetti-btn btn-cf">紙ふぶき</button>
+        <button class="confetti-btn btn-cf" onclick="celebrate()">紙ふぶき</button>
+        <button class="confetti-btn btn-cf" onclick="celebrate()">紙ふぶき</button>
+        <button class="confetti-btn btn-cf" onclick="celebrate()">紙ふぶき</button>
     </div>
 
     <script>
-        // 何が起きても絶対に途中で処理をクラッシュさせない安全ガード付き実行
-        window.addEventListener('DOMContentLoaded', () => {
-            
-            // 1. 時計機能の初期化
-            try {
-                const liveClock = document.getElementById('liveClock');
-                function updateClock() {
-                    if (!liveClock) return;
-                    const now = new Date();
-                    const y = now.getFullYear();
-                    const m = String(now.getMonth() + 1).padStart(2, '0');
-                    const d = String(now.getDate()).padStart(2, '0');
-                    const h = String(now.getHours()).padStart(2, '0');
-                    const min = String(now.getMinutes()).padStart(2, '0');
-                    const s = String(now.getSeconds()).padStart(2, '0');
-                    liveClock.innerText = `${y}/${m}/${d} ${h}:${mi
+        // --- グローバル関数定義 (onclick対策) ---
+        let moveLeft, moveRight, grabAction, toggleCalendar, prevMonth, nextMonth, openModal, closeModal, addComment, addDiary, celebrate;
+
+        // すべてを安全に包み込む
+        (() => {
+            // クレーン状態
+            let craneLeft = 20; 
+          
