@@ -80,9 +80,10 @@
             color: #666;
         }
 
-        /* メインレイアウト */
+        /* メインレイアウト（スマホの時は縦並びにする） */
         .main-content {
             display: flex;
+            flex-direction: row;
             align-items: flex-start;
             justify-content: center;
             gap: 40px;
@@ -90,12 +91,24 @@
             max-width: 800px;
             width: 100%;
             position: relative;
+            padding: 0 10px;
+            box-sizing: border-box;
+        }
+
+        /* スマートフォン用の縦並びルール */
+        @media (max-width: 700px) {
+            .main-content {
+                flex-direction: column;
+                align-items: center;
+                gap: 70px; /* ボタンと下のカードが被らないように広げる */
+            }
         }
 
         /* ゲームエリア */
         .game-layout {
             position: relative;
             width: 360px;
+            max-width: 100%;
         }
 
         .game-container {
@@ -575,11 +588,12 @@
 
     </div>
 
+    <!-- コメントモーダル -->
     <div class="modal-overlay" id="commentModal" onclick="closeModal('commentModal')">
         <div class="modal-content" onclick="event.stopPropagation()">
             <span class="modal-close" onclick="closeModal('commentModal')">&times;</span>
             <div class="modal-title">訪問者のコメント欄</div>
-            <div class="warning-text">⚠️ 誹謗中傷や荒らしはやめてください</div>
+            <div class="warning-text">⚠️ 誹傷中傷や荒らしはやめてください</div>
             
             <div class="input-group">
                 <input type="text" id="commentName" placeholder="ニックネーム">
@@ -593,6 +607,7 @@
         </div>
     </div>
 
+    <!-- 日記モーダル -->
     <div class="modal-overlay" id="diaryModal" onclick="closeModal('diaryModal')">
         <div class="modal-content" onclick="event.stopPropagation()">
             <span class="modal-close" onclick="closeModal('diaryModal')">&times;</span>
@@ -617,10 +632,14 @@
     </div>
 
     <script>
+        // 安全に要素を取得して処理する関数（エラー防止用）
+        function safeSetText(id, text) {
+            const el = document.getElementById(id);
+            if (el) el.innerText = text;
+        }
+
         // --- クレーンゲームのロジック ---
         let craneLeft = 20; 
-        const crane = document.getElementById('crane');
-        const claw = document.getElementById('claw');
         let isOperating = false;
         let grabbedItem = null;
 
@@ -631,21 +650,3 @@
         ];
 
         function moveLeft() { 
-            if (isOperating) return; 
-            if (craneLeft > 10) { 
-                craneLeft -= 15; 
-                crane.style.left = craneLeft + 'px'; 
-            } 
-        }
-
-        function moveRight() { 
-            if (isOperating) return; 
-            if (craneLeft < 240) { 
-                craneLeft += 15; 
-                crane.style.left = craneLeft + 'px'; 
-            } 
-        }
-
-        function grabAction() {
-            if (isOperating) return; 
-            isOperating = 
