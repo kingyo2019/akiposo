@@ -15,20 +15,41 @@
 
         body { font-family: 'Helvetica Neue', Arial, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
         h1 { color: var(--primary); margin-bottom: 20px; }
-        .container { width: 100%; max-width: 600px; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .container { width: 100%; max-width: 600px; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; box-sizing: border-box; }
         
-        /* 隠すクラス */
         .admin-only { display: none; }
 
-        .fish-container { display: flex; justify-content: space-between; width: 100%; max-width: 500px; height: 60px; margin-bottom: 20px; }
-        .fish { font-size: 2rem; animation: jump 2s ease-in-out infinite; }
-        .fish-right { animation-delay: 1s; }
-        @keyframes jump { 0%, 100% { transform: translateY(20px); } 50% { transform: translateY(-10px); } }
+        /* 🐟 トビウオアニメーション（元に戻したデザイン） */
+        .fish-container {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 500px;
+            height: 60px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
 
+        .fish {
+            font-size: 2rem;
+            display: inline-block;
+            animation: jump 2s ease-in-out infinite;
+        }
+
+        .fish-right {
+            animation-delay: 1s;
+        }
+
+        @keyframes jump {
+            0%, 100% { transform: translateY(20px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(-15deg); }
+        }
+
+        /* カウンター・ボタン */
         .counter-box { text-align: center; font-size: 1.2rem; margin-bottom: 15px; font-weight: bold; }
         .counter-box span { color: var(--primary); font-size: 2rem; }
         
-        button { background-color: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 25px; cursor: pointer; width: 100%; margin-bottom: 10px; font-weight: bold; }
+        button { background-color: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 25px; cursor: pointer; width: 100%; margin-bottom: 10px; font-weight: bold; font-size: 1rem; }
         button.secondary { background-color: var(--secondary); }
 
         .list-item { border-bottom: 1px solid #eee; padding: 15px 0; position: relative; }
@@ -54,9 +75,8 @@
 
     <div class="container">
         <h2>📖 あきぽその日記</h2>
-        <!-- 管理者のみ表示 -->
         <div id="diary-form" class="admin-only">
-            <textarea id="diary-input" style="width:100%; height:80px; margin-bottom:10px;"></textarea>
+            <textarea id="diary-input" style="width:100%; height:80px; margin-bottom:10px; box-sizing:border-box; border:2px solid #ddd; border-radius:8px;"></textarea>
             <button id="diary-btn">日記を投稿する</button>
         </div>
         <div id="diary-list"></div>
@@ -64,21 +84,20 @@
 
     <div class="container">
         <h2>💬 足あと・コメント</h2>
-        <input type="text" id="comment-name" placeholder="お名前" style="width:100%; padding:10px; margin-bottom:10px; box-sizing:border-box;">
-        <textarea id="comment-input" style="width:100%; height:80px; margin-bottom:10px; box-sizing:border-box;"></textarea>
+        <input type="text" id="comment-name" placeholder="お名前" style="width:100%; padding:10px; margin-bottom:10px; box-sizing:border-box; border:2px solid #ddd; border-radius:8px;">
+        <textarea id="comment-input" style="width:100%; height:80px; margin-bottom:10px; box-sizing:border-box; border:2px solid #ddd; border-radius:8px;"></textarea>
         <button id="comment-btn" class="secondary">コメントを残す</button>
         <div id="comment-list"></div>
     </div>
 
-    <!-- 管理用ログインボタン -->
     <div style="margin-top: 20px;">
-        <button id="login-btn" style="background:none; color:#aaa; font-size:0.8rem;">管理者ログイン</button>
+        <button id="login-btn" style="background:none; color:#aaa; font-size:0.8rem; width:auto; border:none;">管理者ログイン</button>
     </div>
 
     <script>
         const ADMIN_PASSWORD = "1234"; // パスワード
 
-        // ログイン状態を確認してUIを切り替え
+        // 管理者状態のチェック
         function checkAdmin() {
             if (sessionStorage.getItem('isAdmin') === 'true') {
                 document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block');
@@ -86,78 +105,68 @@
             }
         }
 
-        // 管理者ログイン
+        // ログイン処理
         document.getElementById('login-btn').addEventListener('click', () => {
             const pass = prompt("管理者パスワードを入力してください：");
             if (pass === ADMIN_PASSWORD) {
                 sessionStorage.setItem('isAdmin', 'true');
                 checkAdmin();
-            } else {
-                alert("パスワードが違います");
-            }
+            } else { alert("パスワードが違います"); }
         });
 
-        // 訪問者カウンター（前回の続き）
+        // 訪問者カウンター
         let count = parseInt(localStorage.getItem('visitor_count') || 1);
         if (sessionStorage.getItem('counted') !== 'true') {
-            count++;
-            localStorage.setItem('visitor_count', count);
-            sessionStorage.setItem('counted', 'true');
+            count++; localStorage.setItem('visitor_count', count); sessionStorage.setItem('counted', 'true');
         }
         document.getElementById('visitor-count').textContent = count;
 
-        // 紙ふぶき処理
+        // 3種類の形が出る紙ふぶき
         const shapes = ['square', 'heart', 'star'];
         const colors = ['#ff7675', '#74b9ff', '#ffeaa7', '#55efc4', '#a29bfe', '#fd79a8'];
-        document.getElementById('confetti-btn').addEventListener('click', () => {
+        function createConfetti() {
             for (let i = 0; i < 80; i++) {
                 const el = document.createElement('div');
                 el.className = 'confetti';
                 const shape = shapes[Math.floor(Math.random() * shapes.length)];
                 if (shape === 'square') { el.style.backgroundColor = colors[Math.floor(Math.random()*colors.length)]; el.style.width = '10px'; el.style.height = '10px'; }
-                else { el.innerHTML = (shape === 'heart' ? '❤️' : '★'); el.style.fontSize = '15px'; }
+                else { el.innerHTML = (shape === 'heart' ? '❤️' : '★'); el.style.fontSize = '15px'; el.style.color = colors[Math.floor(Math.random()*colors.length)]; }
                 el.style.left = Math.random() * 100 + 'vw';
-                el.style.animationDuration = Math.random() * 2 + 2 + 's';
+                el.style.animationDuration = Math.random() * 2 + 1.5 + 's';
                 document.body.appendChild(el);
                 el.addEventListener('animationend', () => el.remove());
             }
-        });
+        }
+        document.getElementById('confetti-btn').addEventListener('click', createConfetti);
 
-        // データ管理
+        // データ処理
         let diaries = JSON.parse(localStorage.getItem('diaries')) || [];
         let comments = JSON.parse(localStorage.getItem('comments')) || [];
 
         function render() {
-            const dList = document.getElementById('diary-list');
-            dList.innerHTML = '';
+            const dList = document.getElementById('diary-list'); dList.innerHTML = '';
             diaries.forEach((item, index) => {
-                dList.innerHTML += `<div class="list-item"><div>${item.date}</div><div>${item.text}</div><button class="delete-btn admin-only" onclick="delD(${index})">削除</button></div>`;
+                dList.innerHTML += `<div class="list-item"><div style="font-size:0.8rem;color:#999;">${item.date}</div><div>${item.text}</div><button class="delete-btn admin-only" onclick="delD(${index})">削除</button></div>`;
             });
-            const cList = document.getElementById('comment-list');
-            cList.innerHTML = '';
+            const cList = document.getElementById('comment-list'); cList.innerHTML = '';
             comments.forEach((item, index) => {
-                cList.innerHTML += `<div class="list-item"><div>${item.date} - ${item.name}</div><div>${item.isDeleted ? '<em>このコメントは削除されました</em>' : item.text}</div>${!item.isDeleted ? `<button class="delete-btn admin-only" onclick="delC(${index})">削除</button>` : ''}</div>`;
+                cList.innerHTML += `<div class="list-item"><div style="font-size:0.8rem;color:#999;">${item.date} - <strong>${item.name}</strong></div><div>${item.isDeleted ? '<em style="color:#999;">このコメントは削除されました</em>' : item.text}</div>${!item.isDeleted ? `<button class="delete-btn admin-only" onclick="delC(${index})">削除</button>` : ''}</div>`;
             });
-            checkAdmin(); // 再表示時に管理権限チェック
+            checkAdmin();
         }
 
         document.getElementById('diary-btn').onclick = () => {
-            const text = document.getElementById('diary-input').value;
-            if(!text) return;
-            const now = new Date();
-            diaries.unshift({ date: now.toLocaleString(), text });
-            localStorage.setItem('diaries', JSON.stringify(diaries));
-            render();
+            const text = document.getElementById('diary-input').value; if(!text) return;
+            diaries.unshift({ date: new Date().toLocaleString(), text });
+            localStorage.setItem('diaries', JSON.stringify(diaries)); render();
             document.getElementById('diary-input').value = '';
         };
 
         document.getElementById('comment-btn').onclick = () => {
             const name = document.getElementById('comment-name').value || '名無しさん';
-            const text = document.getElementById('comment-input').value;
-            if(!text) return;
+            const text = document.getElementById('comment-input').value; if(!text) return;
             comments.unshift({ date: new Date().toLocaleString(), name, text, isDeleted: false });
-            localStorage.setItem('comments', JSON.stringify(comments));
-            render();
+            localStorage.setItem('comments', JSON.stringify(comments)); render();
             document.getElementById('comment-input').value = '';
         };
 
