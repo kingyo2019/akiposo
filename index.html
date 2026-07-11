@@ -595,4 +595,57 @@
 
     <div class="modal-overlay" id="diaryModal" onclick="closeModal('diaryModal')">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <span class="modal-close" onclick="
+            <span class="modal-close" onclick="closeModal('diaryModal')">&times;</span>
+            <div class="modal-title">あきぽその日記</div>
+            
+            <div class="input-group">
+                <input type="text" id="diaryTitle" placeholder="日記のタイトル">
+            </div>
+            <div class="input-group">
+                <textarea id="diaryText" rows="4" placeholder="今日の日記を書きましょう..."></textarea>
+            </div>
+            <button class="submit-btn" style="background-color: #0288d1;" onclick="addDiary()">日記を公開する</button>
+
+            <div class="list-box" id="diaryList"></div>
+        </div>
+    </div>
+
+    <div class="button-area">
+        <button class="confetti-btn" onclick="celebrate()">紙ふぶき</button>
+        <button class="confetti-btn" onclick="celebrate()">紙ふぶき</button>
+        <button class="confetti-btn" onclick="celebrate()">紙ふぶき</button>
+    </div>
+
+    <script>
+        // --- クレーンゲームのロジック ---
+        let craneLeft = 20; 
+        const crane = document.getElementById('crane');
+        const claw = document.getElementById('claw');
+        let isOperating = false;
+        let grabbedItem = null;
+
+        const initialPositions = [
+            { id: 'plush1', left: 30 },
+            { id: 'plush2', left: 110 },
+            { id: 'plush3', left: 190 }
+        ];
+
+        function moveLeft() { 
+            if (isOperating) return; 
+            if (craneLeft > 10) { 
+                craneLeft -= 15; 
+                crane.style.left = craneLeft + 'px'; 
+            } 
+        }
+
+        function moveRight() { 
+            if (isOperating) return; 
+            if (craneLeft < 240) { 
+                craneLeft += 15; 
+                crane.style.left = craneLeft + 'px'; 
+            } 
+        }
+
+        function grabAction() {
+            if (isOperating) return; 
+            isOperating = 
