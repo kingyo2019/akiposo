@@ -5,8 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>あきぽそのWebサイト</title>
     <style>
+        /* 1. 波の柄の背景デザイン */
         body {
             background-color: #d2e9ff;
+            background-image: 
+                radial-gradient(circle at 50% 120%, rgba(255,255,255,0.4) 10%, transparent 10.5%),
+                radial-gradient(circle at 50% 130%, #b3d7ff 20%, transparent 20.5%),
+                radial-gradient(circle at 0% 130%, #b3d7ff 20%, transparent 20.5%),
+                radial-gradient(circle at 100% 130%, #b3d7ff 20%, transparent 20.5%);
+            background-size: 100px 50px;
             font-family: 'Helvetica Neue', Arial, sans-serif;
             display: flex;
             flex-direction: column;
@@ -15,18 +22,24 @@
             padding: 20px;
             color: #333;
             user-select: none;
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+            box-sizing: border-box;
         }
 
         h1 {
             margin: 0;
             font-size: 32px;
             color: #222;
+            text-shadow: 2px 2px 0px #fff;
         }
 
         .subtitle {
             margin: 5px 0 20px 0;
             font-size: 16px;
             color: #555;
+            text-shadow: 1px 1px 0px #fff;
         }
 
         .main-container {
@@ -36,6 +49,7 @@
             max-width: 900px;
             width: 100%;
             justify-content: center;
+            z-index: 10;
         }
 
         /* 左側：UFOキャッチャーエリア */
@@ -49,7 +63,7 @@
             width: 400px;
             height: 400px;
             border: 3px solid #333;
-            background-color: #fff;
+            background-color: rgba(255, 255, 255, 0.9);
             border-radius: 15px;
             position: relative;
             overflow: hidden;
@@ -60,7 +74,7 @@
         .crane-rod {
             position: absolute;
             top: 0;
-            left: 75px; /* 初期位置 */
+            left: 75px;
             width: 4px;
             height: 40px;
             background-color: #333;
@@ -116,6 +130,7 @@
             border-bottom: none;
             border-radius: 10px 10px 0 0;
         }
+        
         .prize-orange { left: 20px; background-color: #ff9f43; }
         .prize-orange::before { left: 5px; background-color: #ff9f43; }
         .prize-orange::after { right: 5px; background-color: #ff9f43; }
@@ -124,9 +139,39 @@
         .prize-green::before { left: 5px; background-color: #1dd1a1; border-radius: 50% 50% 0 0; }
         .prize-green::after { right: 5px; background-color: #1dd1a1; border-radius: 50% 50% 0 0; }
 
-        .prize-pink { left: 180px; background-color: #ff6b6b; }
-        .prize-pink::before { left: 2px; height: 35px; top: -25px; background-color: #ff6b6b; }
-        .prize-pink::after { right: 2px; height: 35px; top: -25px; background-color: #ff6b6b; }
+        /* 🐰修正：ウサギの耳の間の線を消したデザイン */
+        .prize-pink { 
+            left: 180px; 
+            background-color: #ff6b6b; 
+        }
+        .prize-pink::before { 
+            left: 5px; 
+            height: 35px; 
+            top: -25px; 
+            background-color: #ff6b6b; 
+            border-right: none; /* 真ん中の線を消す */
+            border-radius: 12px 12px 0 0;
+            z-index: 2;
+        }
+        .prize-pink::after { 
+            right: 5px; 
+            height: 35px; 
+            top: -25px; 
+            background-color: #ff6b6b; 
+            border-left: none; /* 真ん中の線を消す */
+            border-radius: 12px 12px 0 0;
+            z-index: 2;
+        }
+        /* 耳の背景で輪郭を隠すための白いカバーを内側に隠す代わりの処理 */
+        .prize-pink-ears-connector {
+            position: absolute;
+            top: -3px;
+            left: 23px;
+            width: 14px;
+            height: 10px;
+            background-color: #ff6b6b;
+            z-index: 3;
+        }
 
         /* コントローラー */
         .controls {
@@ -164,7 +209,7 @@
         }
 
         .panel-box {
-            background-color: #fff;
+            background-color: rgba(255, 255, 255, 0.95);
             border: 3px solid #333;
             border-radius: 10px;
             padding: 15px;
@@ -223,6 +268,7 @@
             margin-top: 25px;
             display: flex;
             gap: 15px;
+            z-index: 10;
         }
         .btn-confetti {
             background-color: #fff;
@@ -252,7 +298,9 @@
             padding: 20px;
             z-index: 100;
             box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            width: 320px;
+            width: 400px;
+            max-height: 80vh;
+            overflow-y: auto;
         }
         .modal-overlay {
             display: none;
@@ -262,7 +310,7 @@
             z-index: 99;
         }
 
-        /* カレンダーの見た目 */
+        /* カレンダー設定 */
         .cal-header {
             display: flex;
             justify-content: space-between;
@@ -283,23 +331,62 @@
             text-align: center;
         }
         .cal-day-head { font-weight: bold; font-size: 12px; padding-bottom: 5px;}
-        .cal-day {
-            padding: 5px;
-            font-size: 14px;
-            border-radius: 3px;
-        }
+        .cal-day { padding: 5px; font-size: 14px; border-radius: 3px; }
         .cal-today { background-color: #ff7675; color: white; font-weight: bold;}
 
-        /* コメント欄・日記の入力 */
+        /* ブログ風入力・履歴表示のスタイル */
+        .input-area-box {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px dashed #ccc;
+        }
         .modal textarea {
-            width: 93%;
-            height: 100px;
-            margin-top: 10px;
+            width: 95%;
+            height: 80px;
             padding: 8px;
             border: 2px solid #333;
             border-radius: 5px;
             resize: none;
+            font-size: 14px;
         }
+        .btn-submit {
+            background-color: #55efc4;
+            border: 2px solid #333;
+            border-radius: 5px;
+            padding: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        /* アメブロ風ログ表示用 */
+        .blog-log-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            text-align: left;
+        }
+        .blog-post {
+            background-color: #f9f9f9;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+        }
+        .blog-post-time {
+            font-size: 11px;
+            color: #777;
+            margin-bottom: 5px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 2px;
+        }
+        .blog-post-content {
+            font-size: 14px;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
         .modal-close-btn {
             margin-top: 10px;
             width: 100%;
@@ -322,6 +409,24 @@
             0% { transform: translateY(0) rotate(0deg); opacity: 1; }
             100% { transform: translateY(105vh) rotate(720deg); opacity: 0; }
         }
+
+        /* 🐟 2. トビウオのアニメーション設定 */
+        .flying-fish {
+            position: fixed;
+            font-size: 35px;
+            z-index: 5;
+            pointer-events: none;
+        }
+        @keyframes flyLeftToRight {
+            0% { left: -50px; bottom: 10%; transform: rotate(-30deg) scaleX(1); }
+            50% { bottom: 45%; transform: rotate(0deg) scaleX(1); }
+            100% { left: 105vw; bottom: 10%; transform: rotate(30deg) scaleX(1); }
+        }
+        @keyframes flyRightToLeft {
+            0% { right: -50px; bottom: 10%; transform: rotate(-30deg) scaleX(-1); }
+            50% { bottom: 45%; transform: rotate(0deg) scaleX(-1); }
+            100% { right: 105vw; bottom: 10%; transform: rotate(30deg) scaleX(-1); }
+        }
     </style>
 </head>
 <body>
@@ -338,7 +443,11 @@
                 
                 <div class="prize prize-orange" id="prize1"></div>
                 <div class="prize prize-green" id="prize2"></div>
-                <div class="prize prize-pink" id="prize3"></div>
+                
+                <!-- 🐰ウサギ（耳の間の線を消したバージョン） -->
+                <div class="prize prize-pink" id="prize3">
+                    <div class="prize-pink-ears-connector"></div>
+                </div>
 
                 <div class="exit-box">出口</div>
             </div>
@@ -384,22 +493,30 @@
         <button class="modal-close-btn" onclick="closeAllModals()">閉じる</button>
     </div>
 
-    <!-- コメント欄用 -->
+    <!-- コメント欄用（アメブロ風） -->
     <div class="modal" id="commentModal">
         <h3>💬 訪問者のコメント欄</h3>
-        <textarea id="commentInput" placeholder="コメントを残してね！"></textarea>
-        <button class="modal-close-btn" onclick="saveComment()">保存して閉じる</button>
+        <div class="input-area-box">
+            <textarea id="commentInput" placeholder="あきぽそのサイトにコメントを残してね！"></textarea>
+            <button class="btn-submit" onclick="addBlogPost('comment')">コメントを投稿する</button>
+        </div>
+        <div class="blog-log-list" id="commentLogList"></div>
+        <button class="modal-close-btn" onclick="closeAllModals()">閉じる</button>
     </div>
 
-    <!-- 日記用 -->
+    <!-- 日記用（アメブロ風） -->
     <div class="modal" id="diaryModal">
         <h3>📖 あきぽその日記</h3>
-        <textarea id="diaryInput" placeholder="今日の日記を書こう！"></textarea>
-        <button class="modal-close-btn" onclick="saveDiary()">保存して閉じる</button>
+        <div class="input-area-box">
+            <textarea id="diaryInput" placeholder="今日の日記を書こう！"></textarea>
+            <button class="btn-submit" onclick="addBlogPost('diary')">日記を投稿する</button>
+        </div>
+        <div class="blog-log-list" id="diaryLogList"></div>
+        <button class="modal-close-btn" onclick="closeAllModals()">閉じる</button>
     </div>
 
     <script>
-        // --- 1. 時計と訪問者カウンター ---
+        // --- 1. 時計機能 ---
         function updateClock() {
             const now = new Date();
             const y = now.getFullYear();
@@ -413,30 +530,79 @@
         setInterval(updateClock, 1000);
         updateClock();
 
-        // --- 2. モーダル管理 & データ保存 ---
+        // --- 2. モーダルとブログ風履歴（LocalStorage対応） ---
         function openModal(id) {
             document.getElementById('modalOverlay').style.display = 'block';
             document.getElementById(id).style.display = 'block';
             if(id === 'calModal') renderCalendar();
+            if(id === 'commentModal') displayBlogLogs('comment');
+            if(id === 'diaryModal') displayBlogLogs('diary');
         }
         function closeAllModals() {
             document.getElementById('modalOverlay').style.display = 'none';
             const modals = document.querySelectorAll('.modal');
             modals.forEach(m => m.style.display = 'none');
         }
-        // ローカルストレージにテキストを保存
-        document.getElementById('commentInput').value = localStorage.getItem('web_comment') || '';
-        document.getElementById('diaryInput').value = localStorage.getItem('web_diary') || '';
-        function saveComment() {
-            localStorage.setItem('web_comment', document.getElementById('commentInput').value);
-            closeAllModals();
-        }
-        function saveDiary() {
-            localStorage.setItem('web_diary', document.getElementById('diaryInput').value);
-            closeAllModals();
+
+        // アメブロのように次々追加する関数
+        function addBlogPost(type) {
+            const inputId = type === 'comment' ? 'commentInput' : 'diaryInput';
+            const storageKey = type === 'comment' ? 'web_comments_list' : 'web_diaries_list';
+            const textarea = document.getElementById(inputId);
+            
+            if (!textarea.value.trim()) return; // 空っぽなら何もしない
+
+            const now = new Date();
+            const timeStr = `${now.getFullYear()}/${String(now.getMonth()+1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+            // 既存データを読み込み
+            let currentList = JSON.parse(localStorage.getItem(storageKey)) || [];
+            
+            // 新しい投稿オブジェクトを作成して追加 (新しいものが上にくるように先頭に追加)
+            currentList.unshift({
+                time: timeStr,
+                content: textarea.value
+            });
+
+            // 保存して反映
+            localStorage.setItem(storageKey, JSON.stringify(currentList));
+            textarea.value = ''; // 入力欄をクリア
+            displayBlogLogs(type);
         }
 
-        // --- 3. カレンダー機能（左右の三角マークでめくれる） ---
+        // 履歴を画面にアベマブログ風に並べる関数
+        function displayBlogLogs(type) {
+            const listId = type === 'comment' ? 'commentLogList' : 'diaryLogList';
+            const storageKey = type === 'comment' ? 'web_comments_list' : 'web_diaries_list';
+            const container = document.getElementById(listId);
+            container.innerHTML = '';
+
+            let currentList = JSON.parse(localStorage.getItem(storageKey)) || [];
+
+            if (currentList.length === 0) {
+                container.innerHTML = '<div style="color:#777; text-align:center; font-size:14px;">まだ投稿がありません</div>';
+                return;
+            }
+
+            currentList.forEach(item => {
+                const postDiv = document.createElement('div');
+                postDiv.className = 'blog-post';
+
+                const timeDiv = document.createElement('div');
+                timeDiv.className = 'blog-post-time';
+                timeDiv.textContent = item.time;
+
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'blog-post-content';
+                contentDiv.textContent = item.content;
+
+                postDiv.appendChild(timeDiv);
+                postDiv.appendChild(contentDiv);
+                container.appendChild(postDiv);
+            });
+        }
+
+        // --- 3. カレンダー機能 ---
         let currentCalDate = new Date();
         function renderCalendar() {
             const year = currentCalDate.getFullYear();
@@ -446,7 +612,6 @@
             const grid = document.getElementById('calGrid');
             grid.innerHTML = '';
             
-            // 曜日ヘッダー
             const days = ['日', '月', '火', '水', '木', '金', '土'];
             days.forEach(d => {
                 const h = document.createElement('div');
@@ -459,11 +624,8 @@
             const lastDate = new Date(year, month + 1, 0).getDate();
             const today = new Date();
 
-            // 空白埋め
-            for(let i=0; i<firstDay; i++) {
-                grid.appendChild(document.createElement('div'));
-            }
-            // 日付埋め
+            for(let i=0; i<firstDay; i++) grid.appendChild(document.createElement('div'));
+            
             for(let date=1; date<=lastDate; date++) {
                 const dDiv = document.createElement('div');
                 dDiv.className = 'cal-day';
@@ -479,7 +641,7 @@
             renderCalendar();
         }
 
-        // --- 4. 紙吹雪機能 (ハート、星、四角) ---
+        // --- 4. 紙吹雪機能 ---
         function createConfetti(type) {
             const colors = ['#ff7675', '#fdcb6e', '#00cec9', '#6c5ce7', '#e84393', '#55efc4'];
             for (let i = 0; i < 30; i++) {
@@ -491,33 +653,54 @@
                 piece.style.fontSize = (Math.random() * 15 + 15) + 'px';
                 piece.style.color = colors[Math.floor(Math.random() * colors.length)];
                 
-                if (type === 'heart') {
-                    piece.innerHTML = '♥';
-                } else if (type === 'star') {
-                    piece.innerHTML = '★';
-                } else {
-                    // 四角はテキストではなく■かスタイルで表現
-                    piece.innerHTML = '■';
-                }
+                if (type === 'heart') piece.innerHTML = '♥';
+                else if (type === 'star') piece.innerHTML = '★';
+                else piece.innerHTML = '■';
+                
                 document.body.appendChild(piece);
                 setTimeout(() => piece.remove(), 4000);
             }
         }
 
-        // --- 5. ユーホーキャッチャーのロジック ---
+        // --- 5. 🐟 トビウオを飛ばすロジック ---
+        function launchFlyingFish() {
+            const fish = document.createElement('div');
+            fish.className = 'flying-fish';
+            fish.innerHTML = '🐟'; // トビウオの代わりに魚の絵文字
+            
+            const fromLeft = Math.random() > 0.5; // 左右どちらから飛ぶかランダム
+            
+            if (fromLeft) {
+                fish.style.animation = 'flyLeftToRight 3s ease-in-out forwards';
+            } else {
+                fish.style.animation = 'flyRightToLeft 3s ease-in-out forwards';
+            }
+            
+            document.body.appendChild(fish);
+            // アニメーションが終わったら消す
+            setTimeout(() => fish.remove(), 3000);
+        }
+        // 4〜8秒のランダムな間隔でトビウオが飛び出す
+        function triggerFishLoop() {
+            setTimeout(() => {
+                launchFlyingFish();
+                triggerFishLoop();
+            }, 4000 + Math.random() * 4000);
+        }
+        triggerFishLoop();
+
+        // --- 6. ユーホーキャッチャーのロジック ---
         let craneX = 75; 
         let isPlaying = false;
         const rod = document.getElementById('craneRod');
         const claw = document.getElementById('craneClaw');
         
-        // 景品オブジェクト
         const prizes = [
             { id: 'prize1', initX: 20, x: 20, y: 0, element: document.getElementById('prize1') },
             { id: 'prize2', initX: 100, x: 100, y: 0, element: document.getElementById('prize2') },
             { id: 'prize3', initX: 180, x: 180, y: 0, element: document.getElementById('prize3') }
         ];
 
-        // 左右ボタンの動作
         document.getElementById('btnLeft').addEventListener('click', () => {
             if (isPlaying) return;
             craneX = Math.max(15, craneX - 20);
@@ -534,7 +717,6 @@
             claw.style.left = (craneX - 20) + 'px';
         }
 
-        // 「つかむ」ボタンの動作
         document.getElementById('btnCatch').addEventListener('click', () => {
             if (isPlaying) return;
             isPlaying = true;
@@ -543,13 +725,11 @@
             let descending = true;
             let caughtPrize = null;
 
-            // アニメーションループ
             const interval = setInterval(() => {
                 if (descending) {
                     height += 8;
                     if (height >= 300) {
-                        descending = false; // 最下点に到達
-                        // つかむ判定 (クレーンの中心位置と景品の位置を比較)
+                        descending = false;
                         const craneCenter = craneX;
                         prizes.forEach(p => {
                             if (Math.abs((p.x + 30) - craneCenter) < 35 && p.y === 0) {
@@ -560,13 +740,11 @@
                 } else {
                     height -= 8;
                     if (caughtPrize) {
-                        // 景品を一緒に持ち上げる
                         caughtPrize.y = (340 - height);
                         caughtPrize.element.style.bottom = caughtPrize.y + 'px';
                     }
                     if (height <= 40) {
                         clearInterval(interval);
-                        // 戻る動作へ移行
                         moveToExit(caughtPrize);
                     }
                 }
@@ -575,35 +753,27 @@
             }, 20);
         });
 
-        // 出口へ移動する動作
         function moveToExit(caughtPrize) {
-            const exitX = 335; // 出口の上（クレーンのX座標ベース）
+            const exitX = 335;
             const interval = setInterval(() => {
-                if (craneX < exitX) {
-                    craneX = Math.min(exitX, craneX + 5);
-                } else {
-                    craneX = Math.max(exitX, craneX - 5);
-                }
+                if (craneX < exitX) craneX = Math.min(exitX, craneX + 5);
+                else craneX = Math.max(exitX, craneX - 5);
+                
                 updateCranePosition();
                 
                 if (caughtPrize) {
-                    caughtPrize.x = craneX - 35; // クレーンに合わせて追従
+                    caughtPrize.x = craneX - 35;
                     caughtPrize.element.style.left = caughtPrize.x + 'px';
                 }
 
                 if (craneX === exitX) {
                     clearInterval(interval);
-                    // 景品を落とす
-                    if (caughtPrize) {
-                        dropPrize(caughtPrize);
-                    } else {
-                        isPlaying = false;
-                    }
+                    if (caughtPrize) dropPrize(caughtPrize);
+                    else isPlaying = false;
                 }
             }, 20);
         }
 
-        // 景品を出口に落とし、その後自然に元の位置に戻す
         function dropPrize(prize) {
             let currentY = prize.y;
             const interval = setInterval(() => {
@@ -612,7 +782,7 @@
                     currentY = 0;
                     clearInterval(interval);
                     
-                    // 出口に到達したら、1秒後に自然に元の位置へリセットされる
+                    // 自然に元の位置へ戻る
                     setTimeout(() => {
                         prize.x = prize.initX;
                         prize.y = 0;
